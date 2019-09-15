@@ -28,9 +28,10 @@ def get_profile_id(link):
     obj = re.search(r'search\?q=(.*?)&mkt=zh-cn', link)
     if obj:
         # 先从citation url中获取真正参考文献的标题信息
-        title = title_normalize(obj.group(1).replace('+', ' '))
+        original_title = obj.group(1).replace('+', ' ')
+        title = title_normalize(original_title)
     else:
-        return False
+        return {'title': None, 'profile_id': None}
     base_url = 'https://cn.bing.com'
     headers = {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.75 Safari/537.36',
@@ -50,20 +51,20 @@ def get_profile_id(link):
     try:
         # 如果第一个搜索结果和真实标题不一致，舍弃
         if title_normalize(''.join(html.xpath('//*[@id="b_results"]/li[1]/h2/a/strong/text()'))) != title:
-            return False
+            return {'title': original_title, 'profile_id': None}
         else:
             # 如果一致，获取url中的id信息
             href = html.xpath('//*[@id="b_results"]/li[1]/h2/a/@href')[0]
             result = re.search(r'id=(.*?)&', href)
             if result:
                 link2id[link] = result.group(1)
-                return result.group(1)
+                return {'title': original_title, 'profile_id': result.group(1)}
             else:
-                return False
+                return {'title': original_title, 'profile_id': None}
     except KeyboardInterrupt:
         raise KeyboardInterrupt
     except Exception as e:
-        return False
+        return {'title': original_title, 'profile_id': None}
 
 
 def get_references_citations_by_id(profile_id):
@@ -87,7 +88,7 @@ def get_references_citations_by_id(profile_id):
 
     html = etree.HTML(response.text)
 
-    paper = Paper(save2mongo=True)
+    paper = Paper(save2mongo=False)
     paper.title = html.xpath('//li[@class="aca_title"]/text()')[0]
     paper.id = profile_id
     paper.citation_num = citation_num
@@ -114,7 +115,7 @@ def get_references_citations_by_id(profile_id):
     if len(citation_links) >= 0:
         for i, citation_link in enumerate(citation_links):
             profile_id = get_profile_id(citation_link)
-            if profile_id:
+            if profile_id.get('title', False):
                 paper.citations.append(profile_id)
             print('get_profile_id: {}/{}\r'.format(i+1, len(citation_links)), end='')
     print('\nnumber of ids:', len(paper.citations))
