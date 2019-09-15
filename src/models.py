@@ -39,5 +39,3 @@ class Paper(object):
         return_string = return_string[:-2]
         return_string += ' }>'
         return return_string
-
-    def _save2mongo(self):
