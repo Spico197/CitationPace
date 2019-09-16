@@ -13,6 +13,7 @@ This project is under going, so it doesn't support *Scrapy* yet.
 $ pip install requests
 $ pip install pymongo # if you'd like to save your data into MongoDB
 $ pip install networkx # if you use the default plot.py to visualize the results
+$ pip install pandas # if you'd like to export data to excel when plot graphs
 ```
 
 ## Settings
@@ -43,4 +44,5 @@ After the crawling process, you can run `plot.py` as a visualization operation. 
 
 ## Update
 
-- update from recursive programming to loop-programming, which obviate stack overflow problems.
+- update from recursive programming to loop-programming, which obviate stack overflow problems
+
