@@ -12,6 +12,7 @@ This project is under going, so it doesn't support *Scrapy* yet.
 ```bash
 $ pip install requests
 $ pip install pymongo # if you'd like to save your data into MongoDB
+$ pip install networkx # if you use the default plot.py to visualize the results
 ```
 
 ## Settings
@@ -36,3 +37,10 @@ Set the Paper ID in `src/spiders.py` and run
 $ python src/spiders.py
 ```
 
+After the crawling process, you can run `plot.py` as a visualization operation. The picture will be saved into `path_new.pdf`, it is a vectorgraph, so you can zoom in and see some details.
+
+![Path](path.png)
+
+## Update
+
+- update from recursive programming to loop-programming, which obviate stack overflow problems.

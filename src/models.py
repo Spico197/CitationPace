@@ -14,7 +14,7 @@ class Paper(object):
         self.publish_year = kwargs.get('publish_year')
         self.references = list()
         self.citations = list()
-        self.collection_name = kwargs.get('collection_name', 'ref_cit_test')
+        self.collection_name = kwargs.get('collection_name', 'ref_cit_test_3')
         if kwargs.get('save2mongo', False):
             import pymongo
 
@@ -25,12 +25,23 @@ class Paper(object):
         else:
             self.save_flag = 'json'
     def save(self):
+        data = {
+            'id': self.id,
+            'title': self.title,
+            'citation_num': int(self.citation_num),
+            'doi': self.doi,
+            'authors': self.authors,
+            'abstract': self.abstract,
+            'publish_year': int(self.publish_year),
+            'references': self.references,
+            'citations': self.citations, 
+        }
         if self.save_flag == 'mongo':
             if self.collection.find({"id": self.id}).count() <= 0:
-                self.collection.insert_one(self.__dict__)
+                self.collection.insert_one(data)
         else:
             with open(self.collection_name, 'a') as f:
-                f.write('{}\n'.format(json.dumps(self.__dict__, ensure_ascii=False)))
+                f.write('{}\n'.format(json.dumps(data, ensure_ascii=False)))
 
     def __str__(self):
         return_string = "<Paper: { "
